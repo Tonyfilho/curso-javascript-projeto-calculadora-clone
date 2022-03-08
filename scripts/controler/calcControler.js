@@ -1,34 +1,66 @@
 class CalcControler {
-  _displayCalc = "0";
-  _currentDate = new Date();
-
+  _locale;
+  _currentDate;
+  _displayCalcEl;
+  _displayTimeEl;
+  _displayDateEl;
   constructor() {
-    this._displayCalc = "0";
-    this._currentDate;
+    this._locale = 'pt-PT';
+    this._currentDate = new Date();
+    /**
+     * Capturando os dados da tag, usando o ID;
+     */
+    this._displayCalcEl = document.querySelector("#display");
+    this._displayDateEl = document.querySelector("#data");
+    this._displayTimeEl = document.querySelector("#hora");
+
     this.initialize();
   }
 
   initialize() {
-    let displayCalcEl = document.querySelector("#display");
-    let dataEl = document.querySelector("#data");
-    let letTimeEl = document.querySelector("#hora");
-
+    this.setDateTime();
     /**
-     * mandando dados para HTML usando o innerHTML
+     * Usando o SetInterval() para ficar atualizando o segundo na tela do display
      */
-    displayCalcEl.innerHTML = '300';
-    dataEl.innerHTML = this.currentDate.getDate('pt-BR');
-    letTimeEl.innerHTML = this.currentDate.getTime('pt-BR');
+    setInterval(() => {
+    this.setDateTime();
+    }, 1000);
+
+    
   }
+  /**
+   * Setendo o Date e Time com estas função
+   */
+   setDateTime(){
+    this.displayDateEl = this.currentDate.toLocaleDateString(this._locale,{day:"2-digit",month:"short",year:"numeric"});
+    this.displayTime = this.currentDate.toLocaleTimeString(this._locale);
+   }
+  /**
+   * Pegando e Mandando dados para HTML usando o innerHTML
+   */
+  get displayTime() {
+    return this._displayTimeEl.innerHTML;
+  }
+  set displayTime(value) {
+    this._displayTimeEl.innerHTML = value;
+  }
+
+  get displayDateEl() {
+    return this._displayDateEl.innerHTML;
+  }
+  set displayDateEl(value) {
+    return (this._displayDateEl.innerHTML = value);
+  }
+
   get displayCalc() {
-    return this._displayCalc;
+    return this._displayCalcEl.innerHTML;
   }
   set displayCalc(value) {
-    this._displayCalc = value;
+    this._displayCalcEl.innerHTML = value;
   }
 
   get currentDate() {
-    return this._currentDate;
+    return new Date();
   }
   set currentDate(date) {
     this._currentDate = date;

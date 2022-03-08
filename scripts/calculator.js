@@ -1,7 +1,7 @@
 // import { CalcControler } from "./controler/calcControler";
 
  
-    calculator = new CalcControler();
+   window.calculator = new CalcControler();
     //  calculadora.horas
    
 
