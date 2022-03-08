@@ -1,12 +1,14 @@
 class CalcControler {
+  buttons;
   _locale;
   _currentDate;
   _displayCalcEl;
   _displayTimeEl;
   _displayDateEl;
   constructor() {
-    this._locale = 'pt-PT';
+    this._locale = "pt-PT";
     this._currentDate = new Date();
+    this.buttons =  new ButtonsControler();
     /**
      * Capturando os dados da tag, usando o ID;
      */
@@ -15,6 +17,7 @@ class CalcControler {
     this._displayTimeEl = document.querySelector("#hora");
 
     this.initialize();
+    this.buttons.initButtonEvents();//buscantos todos o buttons
   }
 
   initialize() {
@@ -23,18 +26,22 @@ class CalcControler {
      * Usando o SetInterval() para ficar atualizando o segundo na tela do display
      */
     setInterval(() => {
-    this.setDateTime();
+      this.setDateTime();
     }, 1000);
-
-    
   }
+  
+
   /**
-   * Setendo o Date e Time com estas função
+   * Setando o Date e Time com estas função
    */
-   setDateTime(){
-    this.displayDateEl = this.currentDate.toLocaleDateString(this._locale,{day:"2-digit",month:"short",year:"numeric"});
+  setDateTime() {
+    this.displayDateEl = this.currentDate.toLocaleDateString(this._locale, {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
     this.displayTime = this.currentDate.toLocaleTimeString(this._locale);
-   }
+  }
   /**
    * Pegando e Mandando dados para HTML usando o innerHTML
    */
