@@ -28,10 +28,41 @@ class ButtonsControler {
   setError() {
     window.calculator.displayCalc = "error";
   }
-  /**Recebe os numeros */
-  addOperation(value){
-    this.operation.push(value);
-    console.log(this.operation);
+  /**Recebe a ultimo item digitado e verifica se é Numero ou sinal e concatena se for numero */
+  getLastOperation() {
+    if (this.operation.length > 1) {
+      const lastNumero = this.operation[this.operation.length - 1];
+      return lastNumero;
+    }
+    return this.operation;
+  }
+  /**Confirma o ULTIMO operador Digitado, caso haja mudança de operador */
+  IsOperator(value) {
+    //indexOf vai ver se existe e retorna o INDEX do array e -1 se for falso.
+    return (["+", "-", "*", "%", "/"].indexOf(value) > -1)    
+  }
+
+  /**Recebe todos os  numeros digitados */
+  addOperation(value) {
+    //  this.operation.push(value);
+    if (isNaN(this.getLastOperation())) {
+      //isNaN pertence a WINDOWS e verifica se é ou não um numero, seja string ou int float etc
+      // não é Numero
+      if (this.IsOperator(value)) {
+        //troca o operator
+        this.operation[this.operation.length -1] = value;
+      } else {
+        // se for ponto, ce, ac etc
+        console.log(value);
+      }
+    } else {
+      //É numero
+      const localNumeroString =
+        this.getLastOperation().toString() + value.toString(); // concateno o atual array com o ultimo item digitado
+      this.operation.push(parseInt(localNumeroString));
+      // console.log(this.operation);
+    }
+    console.log(this.operation)
   }
   /**Execulta as Açoes do Botão */
   execBtn(value) {
@@ -43,23 +74,27 @@ class ButtonsControler {
         this.cancelEntry();
         break;
       case "soma":
-        //
+       this.operation.push('+');
         break;
       case "subtracao":
-        //
+        this.operation.push('-');
         break;
       case "divisao":
-        //
+        this.operation.push('/');
         break;
       case "multiplicacao":
-        //
+        this.operation.push('*');
         break;
       case "porcento":
-        //
+        this.operation.push('%');
         break;
-      case "iqual":
-        //
+      case "igual":
+       // this.operation.push('=');
         break;
+      case "ponto":
+        this.operation.push('.');
+        break;
+        
       case "1":
       case "2":
       case "3":
@@ -71,12 +106,11 @@ class ButtonsControler {
       case "9":
         this.addOperation(parseInt(value));
         break;
-
+   
       default:
         this.setError();
         break;
     }
-   
   }
   /**Vai no DOM e captura o  Botão */
   initButtonEvents() {
@@ -85,7 +119,7 @@ class ButtonsControler {
     /**pegando todos o Buttons com ID #buttons***/
     this.buttons.forEach((btn) => {
       this.utilites.addEventListenerALL(btn, this._eventsMouse, () => {
-        console.log(btn.className.baseVal.replace("btn-", ""));
+        // console.log(btn.className.baseVal.replace("btn-", ""));
         this.textBtn = btn.className.baseVal.replace("btn-", "");
         this.execBtn(this.textBtn);
       });
@@ -119,5 +153,4 @@ class ButtonsControler {
     this._operation.push(value);
   }
   /**Get e Set da Var _displayCalcEl */
- 
 }
