@@ -28,9 +28,10 @@ class ButtonsControler {
   setError() {
     window.calculator.displayCalc = "error";
   }
-  /**Envia uma mensagemd e error para display  */
+  /**Recebe os numeros */
   addOperation(value){
     this.operation.push(value);
+    console.log(this.operation);
   }
   /**Execulta as Açoes do Botão */
   execBtn(value) {
@@ -75,7 +76,7 @@ class ButtonsControler {
         this.setError();
         break;
     }
-    console.log(this.operation)
+   
   }
   /**Vai no DOM e captura o  Botão */
   initButtonEvents() {
@@ -112,16 +113,11 @@ class ButtonsControler {
   }
   /**Get e Set da Var _operation */
   get operation() {
-    return _operation;
+    return this._operation;
   }
   set operation(value) {
     this._operation.push(value);
   }
   /**Get e Set da Var _displayCalcEl */
-  // get operation(){
-  //   return _operation;
-  // }
-  // set operation(value) {
-  //   this._operation = value;
-  // }
+ 
 }
