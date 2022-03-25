@@ -30,10 +30,9 @@ class ButtonsControler {
     window.calculator.displayCalc = "error";
   }
   /**Recebe a ultimo item digitado e verifica se é Numero ou sinal e concatena se for numero */
-  getLastOperation() {   
-      const lastNumero = this.operation[this.operation.length - 1];
-      return lastNumero;
-  
+  getLastOperation() {
+    const lastNumero = this.operation[this.operation.length - 1];
+    return lastNumero;
   }
   /*******************************************Muda a ultima operação */
   setLastOperation(value) {
@@ -41,41 +40,79 @@ class ButtonsControler {
   }
   /*******************************************Confirma o ULTIMO operador Digitado, caso haja mudança de operador */
   IsOperator(value) {
-    /**indexOf vai ver se existe dentro de VALUE algum item do array.IndexOF e 
+    /**indexOf vai ver se existe dentro de VALUE algum item do array.IndexOF e
      * retorna o INDEX do array se ACHAR ou seja TRUE OU -1 se não achar se for falso.*/
     return ["+", "-", "*", "%", "/"].indexOf(value) > -1;
   }
+  /*********************************************VErifica se existem mais de 3 itens no array 
+   * para já fazer uma operação.
+  */
+  pushOperator(value) {
+    this.operation.push(value);
+    if (this.operation.length > 3) {
+        this.calc();
+    }
+  }
+
+  /**
+   * 
+   * Metodo de calculo  
+   */
+  calc() {
+    /** temos que remover o ultimo dado do Array e guardar em ultima
+     * Variavel antes de de usar o EVAL Pois acada 2pares de numeros e 1 Operador
+     * temos que fazer uma calculo antes de continuar. O Eval é uma função do JS para calculos 
+     * muito poderosa, o POP() é para Pegar a ultima posição do array */
+    const lastOperation = this.operation.pop(); //usando JOIN() para remover as virgulas do Array e transformar em uma string   
+    const resulteval = eval(this.operation.join(''));
+    this.operation = [resulteval,lastOperation ] //mudando as posições do array    
+    
+  }
+
+  setLastNumberToDisplay(){
+    
+  }
 
   /******************************************Recebe todos os  numeros digitados */
-  addOperation(value) {   
+  addOperation(value) {
+    console.log("1º console", value, " ", isNaN(this.getLastOperation()));
     if (isNaN(this.getLastOperation())) {
       //Aqui somente valores NÃO NUMERICOS
       //isNaN pertence a WINDOWS e verifica se é ou não um numero, seja string ou int float etc
       // não é Numero
       if (this.IsOperator(value)) {
-        //É um OPERADOR? Sim então coloco ele no FINAL do Array, passando o VALUE 
+        //É um OPERADOR? Sim então coloco ele no FINAL do Array, passando o VALUE
         this.setLastOperation(value);
-      } else if(isNaN(value)) {
+      } else if (isNaN(value)) {
         // se for ponto, igual etc
-        console.log('ELSEIF aninhado: É um PONTO ou IGUAL',value);
-      } 
-      else {
+        console.log("ELSEIF aninhado: É um PONTO ou IGUAL", value);
+      } else {
         //array estava vazio e É um numero;
-        console.log('ELSE do array vazio',value);        
-         this.operation.push(value);
+        console.log("ELSE do array vazio", value);
+        // this.operation.push(value);
+        this.pushOperator(value);
+        
       }
-
-    } else {      
+    } else {
       /**
        * Aqui somente são numeros , que vem pelo paramentro da função
        transformo o numero  em string, concateno com o uktimo item digitado
       se for numero  e volto a transformar em numero e e faço PUSH no array.
       */
-      let newValue =
-        this.getLastOperation().toString() + value.toString(); // concateno o atual array com o ultimo item digitado     
-       this.setLastOperation(parseInt(newValue));
+      //verificando se é Numero ou Operador aqui no numeros
+      if (this.IsOperator(value)) {
+        //adcionando um operador no array, quando mudamos de numero para operador
+        // this.operation.push(value);
+        this.pushOperator(value);
+      } else {
+        //adcionando um Numero no array.
+        let newValue = this.getLastOperation().toString() + value.toString(); // concateno o atual array com o ultimo item digitado
+        this.setLastOperation(parseInt(newValue));
+
+        //atualizar o display da calculadora. Pois Aqui é o ULTIMO VALOR adcionado nos botões
+      }
     }
-    console.log('Dentro do AddOPeration() no final',this.operation);
+    console.log("Dentro do AddOPeration() no final", this.operation);
   }
   /*************************************Execulta as Açoes do Botão */
   execBtn(value) {
@@ -87,22 +124,22 @@ class ButtonsControler {
         this.cancelEntry();
         break;
       case "soma":
-        this.operation.push("+");
+        this.addOperation("+");
         break;
       case "subtracao":
-        this.operation.push("-");
+        this.addOperation("-");
+
         break;
       case "divisao":
-        this.operation.push("/");
+        this.addOperation("/");
         break;
       case "multiplicacao":
-        this.operation.push("*");
+        this.addOperation("*");
         break;
       case "porcento":
-        this.operation.push("%");
+        this.addOperation("%");
         break;
       case "igual":
-        // this.operation.push('=');
         break;
       case "ponto":
         this.operation.push(".");
