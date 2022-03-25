@@ -8,12 +8,13 @@ class ButtonsControler {
   _textBtn; //botão selecionado.
   _eventsMouse; // var do evento do mouse click e outros.
   _eventCursorMouse; // var do evento do mousePointer do cursor.
-  _operation = []; //var para armazenar todas a operações.
+  _operation; //array para armazenar todas a operações.
 
   constructor() {
     this._eventsMouse = "click drag";
     this._eventCursorMouse = "mouseover mouseup mousedown";
     this._displayCalcEl = document.querySelector("#display");
+    this._operation = [];
   }
   /********************************************************FUNÇOES********************************************* */
   /**Limpa o Array de operações  */
@@ -29,42 +30,54 @@ class ButtonsControler {
     window.calculator.displayCalc = "error";
   }
   /**Recebe a ultimo item digitado e verifica se é Numero ou sinal e concatena se for numero */
-  getLastOperation() {
-    if (this.operation.length > 1) {
+  getLastOperation() {   
       const lastNumero = this.operation[this.operation.length - 1];
       return lastNumero;
-    }
-    return this.operation;
+  
   }
-  /**Confirma o ULTIMO operador Digitado, caso haja mudança de operador */
+  /*******************************************Muda a ultima operação */
+  setLastOperation(value) {
+    this.operation[this.operation.length - 1] = value;
+  }
+  /*******************************************Confirma o ULTIMO operador Digitado, caso haja mudança de operador */
   IsOperator(value) {
-    //indexOf vai ver se existe e retorna o INDEX do array e -1 se for falso.
-    return (["+", "-", "*", "%", "/"].indexOf(value) > -1)    
+    /**indexOf vai ver se existe dentro de VALUE algum item do array.IndexOF e 
+     * retorna o INDEX do array se ACHAR ou seja TRUE OU -1 se não achar se for falso.*/
+    return ["+", "-", "*", "%", "/"].indexOf(value) > -1;
   }
 
-  /**Recebe todos os  numeros digitados */
-  addOperation(value) {
-    //  this.operation.push(value);
+  /******************************************Recebe todos os  numeros digitados */
+  addOperation(value) {   
     if (isNaN(this.getLastOperation())) {
+      //Aqui somente valores NÃO NUMERICOS
       //isNaN pertence a WINDOWS e verifica se é ou não um numero, seja string ou int float etc
       // não é Numero
       if (this.IsOperator(value)) {
-        //troca o operator
-        this.operation[this.operation.length -1] = value;
-      } else {
-        // se for ponto, ce, ac etc
-        console.log(value);
+        //É um OPERADOR? Sim então coloco ele no FINAL do Array, passando o VALUE 
+        this.setLastOperation(value);
+      } else if(isNaN(value)) {
+        // se for ponto, igual etc
+        console.log('ELSEIF aninhado: É um PONTO ou IGUAL',value);
+      } 
+      else {
+        //array estava vazio e É um numero;
+        console.log('ELSE do array vazio',value);        
+         this.operation.push(value);
       }
-    } else {
-      //É numero
-      const localNumeroString =
-        this.getLastOperation().toString() + value.toString(); // concateno o atual array com o ultimo item digitado
-      this.operation.push(parseInt(localNumeroString));
-      // console.log(this.operation);
+
+    } else {      
+      /**
+       * Aqui somente são numeros , que vem pelo paramentro da função
+       transformo o numero  em string, concateno com o uktimo item digitado
+      se for numero  e volto a transformar em numero e e faço PUSH no array.
+      */
+      let newValue =
+        this.getLastOperation().toString() + value.toString(); // concateno o atual array com o ultimo item digitado     
+       this.setLastOperation(parseInt(newValue));
     }
-    console.log(this.operation)
+    console.log('Dentro do AddOPeration() no final',this.operation);
   }
-  /**Execulta as Açoes do Botão */
+  /*************************************Execulta as Açoes do Botão */
   execBtn(value) {
     switch (value) {
       case "ac":
@@ -74,27 +87,27 @@ class ButtonsControler {
         this.cancelEntry();
         break;
       case "soma":
-       this.operation.push('+');
+        this.operation.push("+");
         break;
       case "subtracao":
-        this.operation.push('-');
+        this.operation.push("-");
         break;
       case "divisao":
-        this.operation.push('/');
+        this.operation.push("/");
         break;
       case "multiplicacao":
-        this.operation.push('*');
+        this.operation.push("*");
         break;
       case "porcento":
-        this.operation.push('%');
+        this.operation.push("%");
         break;
       case "igual":
-       // this.operation.push('=');
+        // this.operation.push('=');
         break;
       case "ponto":
-        this.operation.push('.');
+        this.operation.push(".");
         break;
-        
+
       case "1":
       case "2":
       case "3":
@@ -106,13 +119,13 @@ class ButtonsControler {
       case "9":
         this.addOperation(parseInt(value));
         break;
-   
+
       default:
         this.setError();
         break;
     }
   }
-  /**Vai no DOM e captura o  Botão */
+  /************************************Vai no DOM e captura o  Botão */
   initButtonEvents() {
     /**Usando o QUERY_SELECTOR_ALL , pegando um, array de buttons e suas TAGs filhas > */
     this.buttons = document.querySelectorAll("#buttons > g, #parts > g");
