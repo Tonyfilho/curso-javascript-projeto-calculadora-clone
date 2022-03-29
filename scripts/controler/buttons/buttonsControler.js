@@ -34,28 +34,25 @@ class ButtonsControler {
   }
   /**Recebe a ultimo item digitado e verifica se é Numero ou sinal e concatena se for numero */
   getLastOperation() {
-    const lastNumero = this.operation[this.operation.length - 1];
-    return lastNumero;
+    return this.operation[this.operation.length - 1];
   }
   /*******************************************Muda a ultima operação */
   setLastOperation(value) {
-    console.log("SETLastOPERATION ", value);
     this.operation[this.operation.length - 1] = value;
   }
   /*******************************************Confirma o ULTIMO operador Digitado, caso haja mudança de operador */
   IsOperator(value) {
     /**indexOf vai ver se existe dentro de VALUE algum item do array.IndexOF e
      * retorna o INDEX do array se ACHAR ou seja TRUE OU -1 se não achar se for falso.*/
+    // return ["+", "-", "*", "%", "/"].indexOf(value) > -1;
     return ["+", "-", "*", "%", "/"].indexOf(value) > -1;
   }
   /*********************************************VErifica se existem mais de 3 itens no array
    * para já fazer uma operação.
    */
   pushOperator(value) {
-    console.log("PUSHOPERATORValue", value);
     this.operation.push(value);
-    if (this.operation.length > 3) {  
-      console.log("chamou os calc") ;
+    if (this.operation.length > 3) {
       this.calc();
     }
   }
@@ -71,23 +68,16 @@ class ButtonsControler {
      * muito poderosa, o POP() é para Pegar a ultima posição do array */
     let lastOperation = this.operation.pop(); //usando
     let resulteval = eval(this.operation.join(""));
+    this.operation = null;
     this.operation = [resulteval, lastOperation]; //mudando as posições do array
     this.setLastNumberToDisplay();
-    console.log(
-      "OPERATION dentro CALC",
-      this.operation,' ResultEval',
-      resulteval,' LastOperarion',
-      lastOperation
-    );
   }
 
   setLastNumberToDisplay() {
     let lastNumber;
-    console.log('setLastNumberToDisplay LENGTH',this.operation.length - 1);
     for (let i = this.operation.length - 1; i >= 0; i--) {
       if (!this.IsOperator(this.operation[i])) {
         lastNumber = this.operation[i];
-        console.log('LASTNUMBER', lastNumber, ' [I]', i);
         break;
       }
     }
@@ -97,16 +87,16 @@ class ButtonsControler {
   /******************************************Recebe todos os  numeros digitados */
   addOperation(value) {
     // console.log("É Numero?", value, " ", isNaN(this.getLastOperation()));
-    if (isNaN(this.getLastOperation())) {     
+    if (isNaN(this.getLastOperation())) {
       //Aqui somente valores NÃO NUMERICOS
       //isNaN pertence a WINDOWS e verifica se é ou não um numero, seja string ou int float etc
       // não é Numero
       if (this.IsOperator(value)) {
         //É um OPERADOR? Sim então coloco ele no FINAL do Array, passando o VALUE
         this.setLastOperation(value);
-      } else if (isNaN(value)) {        
+      } else if (isNaN(value)) {
         console.log("se for ponto, igual etc", value);
-      } else {       
+      } else {
         // this.operation.push(value);
         this.pushOperator(value);
         this.setLastNumberToDisplay();
@@ -119,7 +109,7 @@ class ButtonsControler {
       */
       //verificando se é Numero ou Operador aqui no numeros
       if (this.IsOperator(value)) {
-        //adcionando um operador no array, quando mudamos de numero para operador       
+        //adcionando um operador no array, quando mudamos de numero para operador
         this.pushOperator(value);
       } else {
         //adcionando um Numero no array.
@@ -127,7 +117,6 @@ class ButtonsControler {
         this.setLastOperation(parseInt(newValue));
         //atualizar o display da calculadora. Pois Aqui é o ULTIMO VALOR adcionado nos botões
         this.setLastNumberToDisplay();
-
       }
     }
     // console.log("Dentro do AddOPeration() no final", this.operation);
@@ -219,7 +208,7 @@ class ButtonsControler {
     return this._operation;
   }
   set operation(value) {
-    this._operation.push(value);
+    this._operation = value;
   }
   /**Get e Set da Var _displayCalcEl */
 }
