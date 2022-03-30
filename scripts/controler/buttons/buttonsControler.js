@@ -25,7 +25,9 @@ class ButtonsControler {
   /********************************************************FUNÇOES********************************************* */
   /**Limpa o Array de operações  */
   clearAll() {
-    this.operation = [0];    
+    this.operation = [0];   
+    this.lastNumber = '';
+    this.lastOperator = ''; 
     this.setLastNumberToDisplay();
   }
   /**Limpa o ultimo item adcionado do array de operações  */
@@ -48,8 +50,7 @@ class ButtonsControler {
   /*******************************************Confirma o ULTIMO operador Digitado, caso haja mudança de operador */
   isOperator(value) {
     /**indexOf vai ver se existe dentro de VALUE algum item do array.IndexOF e
-     * retorna o INDEX do array se ACHAR ou seja TRUE OU -1 se não achar se for falso.*/
-    // return ["+", "-", "*", "%", "/"].indexOf(value) > -1;
+     * retorna o INDEX do array se ACHAR ou seja TRUE OU -1 se não achar se for falso.*/    
     return ["+", "-", "*", "%", "/"].indexOf(value) > -1;
   }
   /*********************************************VErifica se existem mais de 3 itens no array
@@ -81,21 +82,17 @@ class ButtonsControler {
       this.operation = [firstItem, this.lastOperator, this.lastNumber];
     }
     if (this.operation.length > 3) {
-      last = this.operation.pop(); //usando
-      // this.lastOperator = this.getLastItem();
+      last = this.operation.pop(); //usando      
       this.lastNumber = this.getResult();
     }
-    else if (this.operation.length == 3) {
-      // this.lastOperator = this.getLastItem();
+    else if (this.operation.length == 3) {      
       this.lastNumber = this.getLastItem(false);
-    }
-    // this.lastNumber = this.getResult();
+    }    
     let resulteval = this.getResult();
     if (last == "%") {
       resulteval /= 100; //fazendo o Porcentos e atualizando o array
       this.operation = [resulteval];
-    } else {
-      // this.operation = null;
+    } else {     
       this.operation = [resulteval]; //mudando as posições do array
       if (last) {
         this.operation.push(last);
@@ -122,14 +119,7 @@ class ButtonsControler {
   }
   
   setLastNumberToDisplay() {
-    let last = this.getLastItem(false);
-    // for (let i = this.operation.length - 1; i >= 0; i--) {
-    //   if (!this.isOperator(this.operation[i])) {
-    //     last = this.operation[i];
-    //     break;
-    //   }
-    // }
-    // last === null ? 0 : last;
+    let last = this.getLastItem(false);   
     window.calculator.displayCalc = last;
   }
 
