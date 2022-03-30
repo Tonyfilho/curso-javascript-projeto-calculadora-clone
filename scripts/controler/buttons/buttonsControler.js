@@ -10,24 +10,22 @@ class ButtonsControler {
   _eventsMouse; // var do evento do mouse click e outros.
   _eventCursorMouse; // var do evento do mousePointer do cursor.
   _operation; //array para armazenar todas a operações.
-  _lastOperator = '' // var q armazena o ultimo operador digitado
-  _lastNumber = '' // var q armazena o ultimo numero digitado
-
-  
-
+  _lastOperator = ""; // var q armazena o ultimo operador digitado
+  _lastNumber = ""; // var q armazena o ultimo numero digitado
 
   constructor() {
     this._eventsMouse = "click drag";
     this._eventCursorMouse = "mouseover mouseup mousedown";
     this._displayCalcEl = document.querySelector("#display");
     this._operation = [];
+    this.initKeyBoard();
   }
   /********************************************************FUNÇOES********************************************* */
   /**Limpa o Array de operações  */
   clearAll() {
-    this.operation = this.operation.length = 0;   
-    this.lastNumber = '';
-    this.lastOperator = ''; 
+    this.operation = this.operation.length = 0;
+    this.lastNumber = "";
+    this.lastOperator = "";
     this.setLastNumberToDisplay();
   }
   /**Limpa o ultimo item adcionado do array de operações  */
@@ -50,7 +48,7 @@ class ButtonsControler {
   /*******************************************Confirma o ULTIMO operador Digitado, caso haja mudança de operador */
   isOperator(value) {
     /**indexOf vai ver se existe dentro de VALUE algum item do array.IndexOF e
-     * retorna o INDEX do array se ACHAR ou seja TRUE OU -1 se não achar se for falso.*/    
+     * retorna o INDEX do array se ACHAR ou seja TRUE OU -1 se não achar se for falso.*/
     return ["+", "-", "*", "%", "/"].indexOf(value) > -1;
   }
   /*********************************************VErifica se existem mais de 3 itens no array
@@ -63,9 +61,9 @@ class ButtonsControler {
     }
   }
   /*********************************************** Pega o EVAL e fz o calculo do array */
-   getResult(){
-        return eval(this.operation.join(""));
-   }
+  getResult() {
+    return eval(this.operation.join(""));
+  }
   /**
    *
    *************************************************** Metodo de calculo
@@ -77,49 +75,46 @@ class ButtonsControler {
      * muito poderosa, o POP() é para Pegar a ultima posição do array */
     let last = "";
     this.lastOperator = this.getLastItem();
-    if(this.operation.length < 3){
+    if (this.operation.length < 3) {
       let firstItem = this.operation[0];
       this.operation = [firstItem, this.lastOperator, this.lastNumber];
     }
     if (this.operation.length > 3) {
-      last = this.operation.pop(); //usando      
+      last = this.operation.pop(); //usando
       this.lastNumber = this.getResult();
-    }
-    else if (this.operation.length == 3) {      
+    } else if (this.operation.length == 3) {
       this.lastNumber = this.getLastItem(false);
-    }    
+    }
     let resulteval = this.getResult();
     if (last == "%") {
       resulteval /= 100; //fazendo o Porcentos e atualizando o array
       this.operation = [resulteval];
-    } else {     
+    } else {
       this.operation = [resulteval]; //mudando as posições do array
       if (last) {
         this.operation.push(last);
       }
-
     }
     this.setLastNumberToDisplay();
   }
-  /**Pega o Ultimo Item  seja Numero ou Operador*/ 
-  getLastItem(isOperator = true){
-   let lastItem;
-   for(let i = this.operation.length -1; i >= 0; i--){
+  /**Pega o Ultimo Item  seja Numero ou Operador*/
+  getLastItem(isOperator = true) {
+    let lastItem;
+    for (let i = this.operation.length - 1; i >= 0; i--) {
       if (this.isOperator(this.operation[i]) == isOperator) {
         lastItem = this.operation[i];
         break;
-      }     
-   }
+      }
+    }
     if (!lastItem) {
       // Caso seja undefine , guardo o ultimo item dentro do last
-      lastItem = (isOperator) ? this.lastOperator : this.lastNumber;
+      lastItem = isOperator ? this.lastOperator : this.lastNumber;
     }
-    return lastItem
-
+    return lastItem;
   }
-  
+
   setLastNumberToDisplay() {
-    let last = this.getLastItem(false);   
+    let last = this.getLastItem(false);
     window.calculator.displayCalc = last;
   }
 
@@ -133,11 +128,11 @@ class ButtonsControler {
       if (this.isOperator(value)) {
         //É um OPERADOR? Sim então coloco ele no FINAL do Array, passando o VALUE
         this.setLastOperation(value);
-      } 
+      }
       // else if (isNaN(value)) {
       //   console.log("se for ponto, igual etc", value);
-      // } 
-      else {      
+      // }
+      else {
         this.pushOperator(value);
         this.setLastNumberToDisplay();
       }
@@ -162,15 +157,61 @@ class ButtonsControler {
     // console.log("Dentro do AddOPeration() no final", this.operation);
   }
   /******************************GetDOT()***** faz o calculo com numeros q tem Pontos */
-  addDot(){
-    let lastOperation = this.getLastOperation();  
-    if(typeof lastOperation === 'string' && lastOperation.split('').indexOf('.') > -1) return;  
+  addDot() {
+    let lastOperation = this.getLastOperation();
+    if (
+      typeof lastOperation === "string" &&
+      lastOperation.split("").indexOf(".") > -1
+    )
+      return;
     if (this.isOperator(lastOperation) || !lastOperation) {
-      this.pushOperator('0.');
-    }else {
-      this.setLastOperation(lastOperation.toString() + '.');
-    }    
-  this.setLastNumberToDisplay();
+      this.pushOperator("0.");
+    } else {
+      this.setLastOperation(lastOperation.toString() + ".");
+    }
+    this.setLastNumberToDisplay();
+  }
+  /***********************************Pega os Eventos de outras Teclas fora do padrão comum */
+  initKeyBoard() {
+    document.addEventListener("keyup", (evento) => {
+      switch (evento.key) {
+        case "Escape":
+          this.clearAll();
+          break;
+        case "Control":
+        case "Alt":
+        case "Backspace":
+          this.cancelEntry();
+          break;
+        case "+":
+        case "-":
+        case "/":
+        case "*":
+        case "%":
+          this.addOperation(evento.key);
+        case "Enter":
+        case "=":
+          this.calc();
+          break;
+        case ".":
+        case ",":
+          this.addDot();
+          break;
+
+        case "0":
+        case "1":
+        case "2":
+        case "3":
+        case "4":
+        case "5":
+        case "6":
+        case "7":
+        case "8":
+        case "9":
+          this.addOperation(parseInt(evento.key));
+          break;
+      }
+    });
   }
   /*************************************Execulta as Açoes do Botão */
   execBtn(value) {
@@ -200,7 +241,7 @@ class ButtonsControler {
       case "igual":
         this.calc();
         break;
-      case "ponto":        
+      case "ponto":
         this.addDot();
         break;
 
