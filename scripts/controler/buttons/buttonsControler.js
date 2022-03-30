@@ -10,6 +10,11 @@ class ButtonsControler {
   _eventsMouse; // var do evento do mouse click e outros.
   _eventCursorMouse; // var do evento do mousePointer do cursor.
   _operation; //array para armazenar todas a operações.
+  _lastOperator = '' // var q armazena o ultimo operador digitado
+  _lastNumber = '' // var q armazena o ultimo numero digitado
+
+  
+
 
   constructor() {
     this._eventsMouse = "click drag";
@@ -20,12 +25,12 @@ class ButtonsControler {
   /********************************************************FUNÇOES********************************************* */
   /**Limpa o Array de operações  */
   clearAll() {
-    this.operation = [];
+    this.operation = [0];    
     this.setLastNumberToDisplay();
   }
   /**Limpa o ultimo item adcionado do array de operações  */
   cancelEntry() {
-    this.operation.pop();
+    this.operation === null ? 0 : this.operation.pop();
     this.setLastNumberToDisplay();
   }
   /**Envia uma mensagemd e error para display  */
@@ -41,7 +46,7 @@ class ButtonsControler {
     this.operation[this.operation.length - 1] = value;
   }
   /*******************************************Confirma o ULTIMO operador Digitado, caso haja mudança de operador */
-  IsOperator(value) {
+  isOperator(value) {
     /**indexOf vai ver se existe dentro de VALUE algum item do array.IndexOF e
      * retorna o INDEX do array se ACHAR ou seja TRUE OU -1 se não achar se for falso.*/
     // return ["+", "-", "*", "%", "/"].indexOf(value) > -1;
@@ -56,32 +61,76 @@ class ButtonsControler {
       this.calc();
     }
   }
-
+  /*********************************************** Pega o EVAL e fz o calculo do array */
+   getResult(){
+        return eval(this.operation.join(""));
+   }
   /**
    *
-   * Metodo de calculo
+   *************************************************** Metodo de calculo
    */
   calc() {
     /** temos que remover o ultimo dado do Array e guardar em ultima
      * Variavel antes de de usar o EVAL Pois acada 2pares de numeros e 1 Operador
      * temos que fazer uma calculo antes de continuar. O Eval é uma função do JS para calculos
      * muito poderosa, o POP() é para Pegar a ultima posição do array */
-    let lastOperation = this.operation.pop(); //usando
-    let resulteval = eval(this.operation.join(""));
-    this.operation = null;
-    this.operation = [resulteval, lastOperation]; //mudando as posições do array
+    let last = "";
+    this.lastOperator = this.getLastItem();
+    if(this.operation.length < 3){
+      let firstItem = this.operation[0];
+      this.operation = [firstItem, this.lastOperator, this.lastNumber];
+    }
+    if (this.operation.length > 3) {
+      last = this.operation.pop(); //usando
+      // this.lastOperator = this.getLastItem();
+      this.lastNumber = this.getResult();
+    }
+    else if (this.operation.length == 3) {
+      // this.lastOperator = this.getLastItem();
+      this.lastNumber = this.getLastItem(false);
+    }
+    // this.lastNumber = this.getResult();
+    let resulteval = this.getResult();
+    if (last == "%") {
+      resulteval /= 100; //fazendo o Porcentos e atualizando o array
+      this.operation = [resulteval];
+    } else {
+      // this.operation = null;
+      this.operation = [resulteval]; //mudando as posições do array
+      if (last) {
+        this.operation.push(last);
+      }
+
+    }
     this.setLastNumberToDisplay();
   }
-
-  setLastNumberToDisplay() {
-    let lastNumber;
-    for (let i = this.operation.length - 1; i >= 0; i--) {
-      if (!this.IsOperator(this.operation[i])) {
-        lastNumber = this.operation[i];
+  /**Pega o Ultimo Item  seja Numero ou Operador*/ 
+  getLastItem(isOperator = true){
+   let lastItem;
+   for(let i = this.operation.length -1; i >= 0; i--){
+      if (this.isOperator(this.operation[i]) == isOperator) {
+        lastItem = this.operation[i];
         break;
-      }
+      }     
+   }
+    if (!lastItem) {
+      // Caso seja undefine , guardo o ultimo item dentro do last
+      lastItem = (isOperator) ? this.lastOperator : this.lastNumber;
     }
-    window.calculator.displayCalc = lastNumber;
+    return lastItem
+
+  }
+  
+  setLastNumberToDisplay() {
+    let last = this.getLastItem(false);
+    // for (let i = this.operation.length - 1; i >= 0; i--) {
+    //   if (!this.isOperator(this.operation[i])) {
+    //     last = this.operation[i];
+    //     break;
+    //   }
+    // }
+    // last === null ? 0 : last;
+    window.calculator.displayCalc = last;
   }
 
   /******************************************Recebe todos os  numeros digitados */
@@ -91,7 +140,7 @@ class ButtonsControler {
       //Aqui somente valores NÃO NUMERICOS
       //isNaN pertence a WINDOWS e verifica se é ou não um numero, seja string ou int float etc
       // não é Numero
-      if (this.IsOperator(value)) {
+      if (this.isOperator(value)) {
         //É um OPERADOR? Sim então coloco ele no FINAL do Array, passando o VALUE
         this.setLastOperation(value);
       } else if (isNaN(value)) {
@@ -108,7 +157,7 @@ class ButtonsControler {
       se for numero  e volto a transformar em numero e e faço PUSH no array.
       */
       //verificando se é Numero ou Operador aqui no numeros
-      if (this.IsOperator(value)) {
+      if (this.isOperator(value)) {
         //adcionando um operador no array, quando mudamos de numero para operador
         this.pushOperator(value);
       } else {
@@ -147,9 +196,9 @@ class ButtonsControler {
         this.addOperation("%");
         break;
       case "igual":
+        this.calc();
         break;
       case "ponto":
-        this.operation.push(".");
         break;
 
       case "0":
@@ -209,6 +258,20 @@ class ButtonsControler {
   }
   set operation(value) {
     this._operation = value;
+  }
+  /**Get e Set da Var _lastOperator */
+  get lastOperator() {
+    return this._lastOperator;
+  }
+  set lastOperator(value) {
+    this._lastOperator = value;
+  }
+  /**Get e Set da Var _lastNumber */
+  get lastNumber() {
+    return this._lastNumber;
+  }
+  set lastNumber(value) {
+    this._lastNumber = value;
   }
   /**Get e Set da Var _displayCalcEl */
 }
