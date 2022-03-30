@@ -25,7 +25,7 @@ class ButtonsControler {
   /********************************************************FUNÇOES********************************************* */
   /**Limpa o Array de operações  */
   clearAll() {
-    this.operation = [0];   
+    this.operation = this.operation.length = 0;   
     this.lastNumber = '';
     this.lastOperator = ''; 
     this.setLastNumberToDisplay();
@@ -133,10 +133,11 @@ class ButtonsControler {
       if (this.isOperator(value)) {
         //É um OPERADOR? Sim então coloco ele no FINAL do Array, passando o VALUE
         this.setLastOperation(value);
-      } else if (isNaN(value)) {
-        console.log("se for ponto, igual etc", value);
-      } else {
-        // this.operation.push(value);
+      } 
+      // else if (isNaN(value)) {
+      //   console.log("se for ponto, igual etc", value);
+      // } 
+      else {      
         this.pushOperator(value);
         this.setLastNumberToDisplay();
       }
@@ -153,12 +154,23 @@ class ButtonsControler {
       } else {
         //adcionando um Numero no array.
         let newValue = this.getLastOperation().toString() + value.toString(); // concateno o atual array com o ultimo item digitado
-        this.setLastOperation(parseInt(newValue));
+        this.setLastOperation(newValue);
         //atualizar o display da calculadora. Pois Aqui é o ULTIMO VALOR adcionado nos botões
         this.setLastNumberToDisplay();
       }
     }
     // console.log("Dentro do AddOPeration() no final", this.operation);
+  }
+  /******************************GetDOT()***** faz o calculo com numeros q tem Pontos */
+  addDot(){
+    let lastOperation = this.getLastOperation();  
+    if(typeof lastOperation === 'string' && lastOperation.split('').indexOf('.') > -1) return;  
+    if (this.isOperator(lastOperation) || !lastOperation) {
+      this.pushOperator('0.');
+    }else {
+      this.setLastOperation(lastOperation.toString() + '.');
+    }    
+  this.setLastNumberToDisplay();
   }
   /*************************************Execulta as Açoes do Botão */
   execBtn(value) {
@@ -188,7 +200,8 @@ class ButtonsControler {
       case "igual":
         this.calc();
         break;
-      case "ponto":
+      case "ponto":        
+        this.addDot();
         break;
 
       case "0":
