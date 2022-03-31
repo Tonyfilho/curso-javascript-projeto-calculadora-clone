@@ -19,11 +19,12 @@ class ButtonsControler {
     this._displayCalcEl = document.querySelector("#display");
     this._operation = [];
     this.initKeyBoard();
+    //this.pastFromClipboard(); //inicializado ctrl + v
   }
   /********************************************************FUNÇOES********************************************* */
   /**Limpa o Array de operações  */
   clearAll() {
-    this.operation = this.operation.length = 0;
+    this.operation = [0];
     this.lastNumber = "";
     this.lastOperator = "";
     this.setLastNumberToDisplay();
@@ -62,7 +63,13 @@ class ButtonsControler {
   }
   /*********************************************** Pega o EVAL e fz o calculo do array */
   getResult() {
-    return eval(this.operation.join(""));
+    try {
+      return eval(this.operation.join(""));
+    } catch (error) {
+      setTimeout(() => {
+        this.setError();
+      },100)
+    }
   }
   /**
    *
@@ -171,21 +178,17 @@ class ButtonsControler {
     }
     this.setLastNumberToDisplay();
   }
-  /***********************Evento de Copiar e Colar */
-  copyCliBoard() {
-    let input = document.createElement('input');
-    input.value = window.calculator.displayCalc;
-    //Adcionando este Input criado no BODY do navegador
-    document.body.appendChild(input);
-    // Selecionando o Conteudo do Input
-    input.select();
-    //Copiando para Sistema Operacional
-    document.execCommand('Copy');
 
+  /***********************Evento de Copiar e Colar  daforma que é ensinada esta deprecate*/
 
-
-
-
+  async copyToClipboard() {
+    const displayCalc = window.calculator.displayCalc;
+    await navigator.clipboard.writeText(displayCalc);
+  }
+  async pastFromClipboard() {
+    let text = await navigator.clipboard.readText();
+    console.log(text);
+    window.calculator.displayCalc = parseFloat(text);
   }
 
   /***********************************Pega os Eventos de outras Teclas fora do padrão comum */
@@ -195,7 +198,6 @@ class ButtonsControler {
         case "Escape":
           this.clearAll();
           break;
-        case "Control":
         case "Alt":
         case "Backspace":
           this.cancelEntry();
@@ -227,12 +229,16 @@ class ButtonsControler {
         case "9":
           this.addOperation(parseInt(evento.key));
           break;
-        case 'c':
-         if(evento.ctrlKey) {
-           this.copyCliBoard();
-         }
-
-        break;
+        case "c":
+          if (evento.ctrlKey) {
+            this.copyToClipboard();
+          }
+          break;
+        case "v":
+          if (evento.ctrlKey) {
+            this.pastFromClipboard();
+          }
+          break;
       }
     });
   }
