@@ -171,6 +171,23 @@ class ButtonsControler {
     }
     this.setLastNumberToDisplay();
   }
+  /***********************Evento de Copiar e Colar */
+  copyCliBoard() {
+    let input = document.createElement('input');
+    input.value = window.calculator.displayCalc;
+    //Adcionando este Input criado no BODY do navegador
+    document.body.appendChild(input);
+    // Selecionando o Conteudo do Input
+    input.select();
+    //Copiando para Sistema Operacional
+    document.execCommand('Copy');
+
+
+
+
+
+  }
+
   /***********************************Pega os Eventos de outras Teclas fora do padrão comum */
   initKeyBoard() {
     document.addEventListener("keyup", (evento) => {
@@ -210,6 +227,12 @@ class ButtonsControler {
         case "9":
           this.addOperation(parseInt(evento.key));
           break;
+        case 'c':
+         if(evento.ctrlKey) {
+           this.copyCliBoard();
+         }
+
+        break;
       }
     });
   }
